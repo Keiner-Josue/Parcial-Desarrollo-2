@@ -1,0 +1,64 @@
+{
+  "paquetes": [
+    {
+      "id": 1,
+      "titulo": "Paquete Cancún 5 días",
+      "descripcion": "Vuelo + hotel todo incluido frente al mar",
+      "imagen": "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=500",
+      "precio": 4800000
+    },
+    {
+      "id": 2,
+      "titulo": "Paquete Barcelona 10 días",
+      "descripcion": "Tour cultural por Europa con guía",
+      "imagen": "https://images.unsplash.com/photo-1583422409516-2895a77efded?w=500",
+      "precio": 10000000
+    },
+    {
+      "id": 3,
+      "titulo": "Cartagena 7 días",
+      "descripcion": "Sol, playa y ciudad amurallada",
+      "imagen": "https://images.unsplash.com/photo-1568632234157-ce7aecd03d0d?w=500",
+      "precio": 3600000
+    },
+    {
+        "id": 4,
+    "titulo": "Paquete New York 14 días ",
+    "precio": 8200000,
+    "descripcion": "Disfruta de una experiencia inolvidable en la Gran Manzana.",
+    "imagen": "https://nyc.eu/wp-content/uploads/2015/07/New_York_City-scaled.jpg"
+  },
+  {
+    "id": 5,
+    "titulo": "Paquete Tokio 12 días de cultura y tecnología",
+    "precio": 22200000,
+    "descripcion": "Explora la modernidad de Tokio y sus tradiciones únicas.",
+    "imagen": "https://content-viajes.nationalgeographic.com.es/medio/2024/09/03/tokio_133ce43a_1284581217_240903122054_1280x854.jpg"
+  },
+  {
+    "id": 6,
+    "titulo": "Paquete Maldivas 10 días de lujo y relax",
+    "precio": 12000000,
+    "descripcion": "Escapa a un paraíso tropical con todo incluido.",
+    "imagen": "https://arenatours.com/wp-content/uploads/2019/07/hard-rock-hotel-maldives-3.jpg"
+  }
+  ],
+  "stats": [
+    {
+      "numero": "150+",
+      "etiqueta": "Destinos"
+    },
+    {
+      "numero": "5,000+",
+      "etiqueta": "Viajeros Felices"
+    },
+    {
+      "numero": "24/7",
+      "etiqueta": "Soporte"
+    },
+    {
+      "numero": "4.9★",
+      "etiqueta": "Calificación"
+    }
+  ]
+}

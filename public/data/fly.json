@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "nombre": "Airbus A321-200",
+    "capacidad": 220,
+    "En servicio": 45,
+    "servicios": ["Aire acondicionado", "Wi-Fi", "Asientos reclinables", "USB en cada asiento"],
+    "imagen": "https://cdn.turkishairlines.com/m/58cc428c1bb9822c/original/A-Turkish-Airlines-Airbus-A321-200-up-in-the-sky.jpg",
+    "descripcion": "Es el más grande de la familia A320. Ideal para largo alcance y alta capacidad."
+  },
+  {
+    "id": 2,
+    "nombre": "Boeing 737-200",
+    "capacidad": 130,
+    "En servicio": 32,
+    "servicios": ["Aire acondicionado", "Wi-Fi", "Sistema de entretenimiento", "Asientos reclinables"],
+    "imagen": "https://nolinor.com/wp-content/uploads/2025/08/Untitled-design-4_large_2400x1200_optimized.webp",
+    "descripcion": "Perfecto para vuelos de corta y media distancia con alta eficiencia."
+  },
+  {
+    "id": 3,
+    "nombre": "Airbus A320-200",
+    "capacidad": 180,
+    "En servicio": 56,
+    "servicios": ["Aire acondicionado", "Wi-Fi", "Asientos reclinables", "USB en cada asiento"],
+    "imagen": "https://aircharterservice-globalcontent-live.cphostaccess.com/images/aircraft-guide-images/group/airbus-a320-large_tcm36-3644.jpg",
+    "descripcion": "Ideal para vuelos de corta y media distancia con alta eficiencia y confort."
+  },
+  {
+    "id": 4,
+    "nombre": "Airbus A380-800",
+    "capacidad": 555,
+    "En servicio": 6,
+    "servicios": ["Aire acondicionado", "Wi-Fi", "Asientos reclinables", "Entretenimiento a bordo", "Restaurantes y bares"],
+    "imagen": "https://upload.wikimedia.org/wikipedia/commons/0/09/A6-EDY_A380_Emirates_31_jan_2013_jfk_%288442269364%29_%28cropped%29.jpg",
+    "descripcion": "El avión comercial más grande del mundo, perfecto para vuelos internacionales de larga distancia."
+  },
+  {
+    "id": 5,
+    "nombre": "Boeing 777X",
+    "capacidad": 396,
+    "En servicio": 12,
+    "servicios": ["Aire acondicionado", "Wi-Fi", "Asientos reclinables", "Entretenimiento a bordo", "Restaurantes y bares"],
+    "imagen": "",
+    "descripcion": "Avión de fuselaje ancho diseñado para vuelos de larga distancia con alta eficiencia."
+  }
+]
