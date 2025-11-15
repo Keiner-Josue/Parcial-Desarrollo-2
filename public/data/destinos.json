@@ -8,7 +8,7 @@
     "avion": "Airbus A320-200",
     "escalas": 0,
     "precio": 180000,
-    "imagen": "https://images.unsplash.com/photo-1601736054748-2d0a0a7b8e6f?w=500",
+    "imagen": "https://grupodomus.com.co/wp-content/uploads/2023/01/Razones-para-vivir-en-la-ciudad-bonita_Bucaramanga.jpg",
     "descripcion": "Ciudad de los parques, clima agradable y excelente gastronomía santandereana."
   },
   {
@@ -21,7 +21,7 @@
     "escalas": 1,
     "escalasCiudades": ["Ciudad de México"],
     "precio": 1850000,
-    "imagen": "https://images.unsplash.com/photo-1518963915404-f8d83d6ea3dc?w=500",
+    "imagen": "https://www.caminoreal.com/storage/app/media/Blog/tijuana-atractivos-de-la-ciudad-turista.jpg",
     "descripcion": "Ciudad fronteriza vibrante con cultura única y gastronomía de clase mundial."
   },
   {
@@ -96,7 +96,7 @@
     "avion": "Boeing 777X",
     "escalas": 0,
     "precio": 1950000,
-    "imagen": "https://images.unsplash.com/photo-1555881603-7fcc9eb0fc1c?w=500",
+    "imagen": "https://storage.googleapis.com/chile-travel-cdn/2021/08/Vitrina_Centro_santiago-1.jpg",
     "descripcion": "Capital chilena rodeada de montañas, moderna metrópolis con excelentes vinos."
   },
   {
