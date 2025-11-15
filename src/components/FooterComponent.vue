@@ -8,10 +8,10 @@
           </p>
         </div>
         <div class="col-md-6 text-center text-md-end">
-          <a href="#" class="text-white me-3 text-decoration-none">
+          <a href="https://www.facebook.com/share/1aqJ9y7Tfx/" class="text-white me-3 text-decoration-none">
             <i class="bi bi-facebook"></i>
           </a>
-          <a href="#" class="text-white me-3 text-decoration-none">
+          <a href="https://www.instagram.com/why_josuek?igsh=bnV6Z3drZGRobzJs" class="text-white me-3 text-decoration-none">
             <i class="bi bi-instagram"></i>
           </a>
           <a href="#" class="text-white text-decoration-none">
