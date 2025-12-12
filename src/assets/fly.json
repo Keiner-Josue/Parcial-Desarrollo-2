@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "imagen": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=60",
+    "nombre": "Boeing 737",
+    "capacidad": 180,
+    "En servicio": "Sí",
+    "descripcion": "Avión moderno y confortable para rutas nacionales e internacionales.",
+    "servicios": ["WiFi", "Comida a bordo", "Entretenimiento"]
+  },
+  {
+    "id": 2,
+    "imagen": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=60",
+    "nombre": "Airbus A320",
+    "capacidad": 150,
+    "En servicio": "No",
+    "descripcion": "Operado en rutas regionales con alta eficiencia de combustible.",
+    "servicios": ["Comida ligera", "Mascotas permitidas"]
+  }
+]

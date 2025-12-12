@@ -1,68 +1,19 @@
-// Configuración base de la API
-const API_BASE_URL = 'https://fakestoreapi.com';
+// Configuración de MockAPI
+export const API_CONFIG = {
+  // Cambia esto por TU URL (sin /usuarios ni /productos al final)
+  BASE_URL: 'https://693b6dc59b80ba7262cd43fa.mockapi.io/api/v1/',
+  BASE_URL: 'https://693b7a639b80ba7262cd65c7.mockapi.io/api/v1/',
+  
+  USUARIOS: '/usuarios',
+  PRODUCTOS: '/productos',
+  FLOTA: '/flota',
+  DESTINOS: '/destinos'
+};
 
-// Servicio genérico para peticiones HTTP
-class ApiService {
-  async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
-    
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers
-        },
-        ...options
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
-  }
-
-  // Métodos específicos para productos
-  async getProducts() {
-    return this.request('/products');
-  }
-
-  async getProduct(id) {
-    return this.request(`/products/${id}`);
-  }
-
-  async createProduct(productData) {
-    return this.request('/products', {
-      method: 'POST',
-      body: JSON.stringify(productData)
-    });
-  }
-
-  async updateProduct(id, productData) {
-    return this.request(`/products/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(productData)
-    });
-  }
-
-  async deleteProduct(id) {
-    return this.request(`/products/${id}`, {
-      method: 'DELETE'
-    });
-  }
-
-  // Métodos para categorías
-  async getCategories() {
-    return this.request('/products/categories');
-  }
-
-  async getProductsByCategory(category) {
-    return this.request(`/products/category/${category}`);
-  }
-}
-
-export default new ApiService();
+// URLs completas listas para usar
+export const API_URLS = {
+  USUARIOS: `https://693b6dc59b80ba7262cd43fa.mockapi.io/api/v1/usuarios`,
+  PRODUCTOS: `https://693b6dc59b80ba7262cd43fa.mockapi.io/api/v1/productos`,
+  FLOTA: 'https://693b7a639b80ba7262cd65c7.mockapi.io/api/v1/flota',
+  DESTINOS: 'https://693b7a639b80ba7262cd65c7.mockapi.io/api/v1/destinos'
+};

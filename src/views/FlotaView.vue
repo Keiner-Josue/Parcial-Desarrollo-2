@@ -66,6 +66,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { API_URLS } from '@/service/api.js';
+import flyLocal from '@/assets/fly.json';
 
 const flota = ref([]);
 const cargando = ref(false);
@@ -73,10 +75,18 @@ const cargando = ref(false);
 const cargarFlota = async () => {
   cargando.value = true;
   try {
-    const response = await fetch('/data/fly.json');
-    flota.value = await response.json();
+    const response = await fetch(API_URLS.FLOTA);
+    const data = await response.json();
+    if (Array.isArray(data)) {
+      flota.value = data;
+    } else if (data && Array.isArray(data.flota)) {
+      flota.value = data.flota;
+    } else {
+      flota.value = flyLocal;
+    }
   } catch (error) {
-    console.error('Error cargando flota:', error);
+    console.error('Error cargando flota desde API, usando fallback local:', error);
+    flota.value = flyLocal;
   } finally {
     cargando.value = false;
   }

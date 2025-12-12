@@ -48,6 +48,8 @@
 
 <script setup>
 import { ref } from 'vue';
+import { API_URLS } from '@/service/api.js';
+import usuariosLocal from '@/assets/usuarios.json';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -63,8 +65,18 @@ const handleLogin = async () => {
   errorMessage.value = '';
 
   try {
-    const response = await fetch('/data/usuarios.json');
-    const usuarios = await response.json();
+    let usuarios = [];
+    try {
+      const response = await fetch(API_URLS.USUARIOS);
+      usuarios = await response.json();
+    } catch (e) {
+      usuarios = usuariosLocal;
+    }
+
+    // Ensure it's an array (API might return an object or empty)
+    if (!Array.isArray(usuarios) || usuarios.length === 0) {
+      usuarios = usuariosLocal;
+    }
 
     const usuarioValido = usuarios.find(
       u => u.usuario === credentials.value.usuario && 

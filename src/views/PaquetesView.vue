@@ -195,6 +195,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { Modal } from 'bootstrap';
+import { API_URLS } from '@/service/api.js';
 
 export default {
   name: 'PaquetesView',
@@ -218,9 +219,16 @@ export default {
     const cargarPaquetes = async () => {
       cargando.value = true;
       try {
-        const response = await fetch('/data/paquetes.json');
+        const response = await fetch(API_URLS.PRODUCTOS);
         const data = await response.json();
-        paquetes.value = data.paquetes;
+        // API may return an array or an object with `paquetes`.
+        if (Array.isArray(data)) {
+          paquetes.value = data;
+        } else if (data && Array.isArray(data.paquetes)) {
+          paquetes.value = data.paquetes;
+        } else {
+          paquetes.value = [];
+        }
       } catch (error) {
         mostrarAlerta('danger', 'Error al cargar paquetes');
         console.error(error);

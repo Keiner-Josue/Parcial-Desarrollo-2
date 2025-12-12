@@ -126,6 +126,10 @@
 <script>
 import { ref, onMounted } from 'vue';
 import ProductCardComponent from '@/components/ProductCardComponent.vue';
+import { API_URLS } from '@/service/api.js';
+import usuariosLocal from '@/assets/usuarios.json';
+import destinosLocal from '@/assets/destinos.json';
+import flyLocal from '@/assets/fly.json';
 
 export default {
   name: 'DashboardProductoView',
@@ -149,26 +153,74 @@ export default {
       cargando.value = true;
       try {
         // Cargar paquetes
-        const responsePaquetes = await fetch('/data/paquetes.json');
-        const dataPaquetes = await responsePaquetes.json();
-        paquetesDestacados.value = dataPaquetes.paquetes || [];
-        stats.value.totalPaquetes = paquetesDestacados.value.length;
-        statsGenerales.value = dataPaquetes.stats || [];
+        try {
+          const responsePaquetes = await fetch(API_URLS.PRODUCTOS);
+          const dataPaquetes = await responsePaquetes.json();
+          if (Array.isArray(dataPaquetes)) {
+            paquetesDestacados.value = dataPaquetes;
+            statsGenerales.value = [];
+          } else if (dataPaquetes && Array.isArray(dataPaquetes.paquetes)) {
+            paquetesDestacados.value = dataPaquetes.paquetes;
+            statsGenerales.value = dataPaquetes.stats || [];
+          } else {
+            paquetesDestacados.value = [];
+            statsGenerales.value = [];
+          }
+          stats.value.totalPaquetes = paquetesDestacados.value.length;
+        } catch (e) {
+          // fallback to local data files if API call fails
+          const responsePaquetes = await fetch('/data/paquetes.json');
+          const dataPaquetes = await responsePaquetes.json();
+          paquetesDestacados.value = dataPaquetes.paquetes || [];
+          stats.value.totalPaquetes = paquetesDestacados.value.length;
+          statsGenerales.value = dataPaquetes.stats || [];
+        }
 
         // Cargar destinos
-        const responseDestinos = await fetch('/data/destinos.json');
-        const dataDestinos = await responseDestinos.json();
-        stats.value.totalDestinos = dataDestinos.length;
+        try {
+          const responseDestinos = await fetch(API_URLS.DESTINOS);
+          const dataDestinos = await responseDestinos.json();
+          if (Array.isArray(dataDestinos)) {
+            stats.value.totalDestinos = dataDestinos.length;
+          } else if (dataDestinos && Array.isArray(dataDestinos.destinos)) {
+            stats.value.totalDestinos = dataDestinos.destinos.length;
+          } else {
+            stats.value.totalDestinos = destinosLocal.length;
+          }
+        } catch (e) {
+          console.warn('Fallo al obtener destinos desde API, usando datos locales:', e);
+          stats.value.totalDestinos = destinosLocal.length;
+        }
 
         // Cargar flota
-        const responseFlota = await fetch('/data/fly.json');
-        const dataFlota = await responseFlota.json();
-        stats.value.totalFlota = dataFlota.length;
+        try {
+          const responseFlota = await fetch(API_URLS.FLOTA);
+          const dataFlota = await responseFlota.json();
+          if (Array.isArray(dataFlota)) {
+            stats.value.totalFlota = dataFlota.length;
+          } else if (dataFlota && Array.isArray(dataFlota.flota)) {
+            stats.value.totalFlota = dataFlota.flota.length;
+          } else {
+            stats.value.totalFlota = flyLocal.length;
+          }
+        } catch (e) {
+          console.warn('Fallo al obtener flota desde API, usando datos locales:', e);
+          stats.value.totalFlota = flyLocal.length;
+        }
 
         // Cargar usuarios
-        const responseUsuarios = await fetch('/data/usuarios.json');
-        const dataUsuarios = await responseUsuarios.json();
-        stats.value.totalUsuarios = dataUsuarios.length;
+        try {
+          const responseUsuarios = await fetch(API_URLS.USUARIOS);
+          let dataUsuarios = await responseUsuarios.json();
+          if (!Array.isArray(dataUsuarios) || dataUsuarios.length === 0) {
+            dataUsuarios = usuariosLocal;
+          }
+          stats.value.totalUsuarios = dataUsuarios.length;
+        } catch (e) {
+          const responseUsuarios = await fetch('/data/usuarios.json');
+          const dataUsuarios = await responseUsuarios.json();
+          stats.value.totalUsuarios = dataUsuarios.length;
+        }
 
       } catch (error) {
         console.error('Error cargando datos:', error);

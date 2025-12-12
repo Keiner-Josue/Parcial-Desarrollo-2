@@ -74,6 +74,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { API_URLS } from '@/service/api.js';
+import destinosLocal from '@/assets/destinos.json';
 
 const destinos = ref([]);
 const cargando = ref(false);
@@ -81,10 +83,18 @@ const cargando = ref(false);
 const cargarDestinos = async () => {
   cargando.value = true;
   try {
-    const response = await fetch('/data/destinos.json');
-    destinos.value = await response.json();
+    const response = await fetch(API_URLS.DESTINOS);
+    const data = await response.json();
+    if (Array.isArray(data)) {
+      destinos.value = data;
+    } else if (data && Array.isArray(data.destinos)) {
+      destinos.value = data.destinos;
+    } else {
+      destinos.value = destinosLocal;
+    }
   } catch (error) {
-    console.error('Error cargando destinos:', error);
+    console.error('Error cargando destinos desde API, usando fallback local:', error);
+    destinos.value = destinosLocal;
   } finally {
     cargando.value = false;
   }
