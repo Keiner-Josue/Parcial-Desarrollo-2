@@ -39,8 +39,8 @@
       </form>
 
       <div class="login-info">
-        <p><strong>Usuario de prueba:</strong> admin</p>
-        <p><strong>Contraseña:</strong> admin123</p>
+        <p><strong>Usuario de prueba:</strong>admin</p>
+        <p><strong>Contraseña:</strong>admin123</p>
       </div>
     </div>
   </div>
@@ -49,14 +49,10 @@
 <script setup>
 import { ref } from 'vue';
 import { API_URLS } from '@/service/api.js';
-import usuariosLocal from '@/assets/usuarios.json';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const credentials = ref({
-  usuario: '',
-  contraseña: ''
-});
+const credentials = ref({ usuario: '', contraseña: '' });
 const errorMessage = ref('');
 const loading = ref(false);
 
@@ -65,39 +61,51 @@ const handleLogin = async () => {
   errorMessage.value = '';
 
   try {
-    let usuarios = [];
-    try {
-      const response = await fetch(API_URLS.USUARIOS);
-      usuarios = await response.json();
-    } catch (e) {
-      usuarios = usuariosLocal;
-    }
+    const response = await fetch(API_URLS.USUARIOS);
+    if (!response.ok) throw new Error('No se pudo conectar a la API de usuarios');
+    const usuarios = await response.json();
 
-    // Ensure it's an array (API might return an object or empty)
-    if (!Array.isArray(usuarios) || usuarios.length === 0) {
-      usuarios = usuariosLocal;
-    }
-
+    // Validación: tu mock usa email/password OR name/password?
+    // En tus datos anteriores usabas 'email' y 'password'.
     const usuarioValido = usuarios.find(
-      u => u.usuario === credentials.value.usuario && 
-           u.contraseña === credentials.value.contraseña
+      u =>
+        (u.email && u.email === credentials.value.usuario) ||
+        (u.name && u.name === credentials.value.usuario) ||
+        (u.usuario && u.usuario === credentials.value.usuario)
     );
 
-    if (usuarioValido) {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('usuario', credentials.value.usuario);
-      router.push('/dashboard');
-    } else {
-      errorMessage.value = '❌ Usuario o contraseña incorrectos';
+    // si existe, ahora validar la contraseña
+    if (!usuarioValido) {
+      errorMessage.value = '❌ Usuario no encontrado';
+      loading.value = false;
+      return;
     }
-  } catch (error) {
-    console.error('Error al validar credenciales:', error);
+
+    // comparar contraseña (keys posibles: password o contraseña)
+    const pwdKey = usuarioValido.password !== undefined ? 'password' : (usuarioValido.contraseña !== undefined ? 'contraseña' : null);
+    if (!pwdKey || usuarioValido[pwdKey] !== credentials.value.contraseña) {
+      errorMessage.value = '❌ Usuario o contraseña incorrectos';
+      loading.value = false;
+      return;
+    }
+
+    // guardar sesión: isAuthenticated + user (json) + usuario (compatibilidad)
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('user', JSON.stringify(usuarioValido));
+    // guarda también 'usuario' (string) para compatibilidad con código antiguo:
+    localStorage.setItem('usuario', usuarioValido.name || usuarioValido.nombre || usuarioValido.email || usuarioValido.usuario || '');
+
+    router.push('/dashboard');
+  } catch (e) {
+    console.error('Error en login:', e);
     errorMessage.value = '❌ Error al conectar con el servidor';
   } finally {
     loading.value = false;
   }
 };
 </script>
+
+
 
 <style scoped>
 .login-container {

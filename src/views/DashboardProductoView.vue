@@ -149,85 +149,72 @@ export default {
       totalUsuarios: 0
     });
 
-    const cargarDatos = async () => {
-      cargando.value = true;
+      const cargarDatos = async () => {
+    cargando.value = true;
+    try {
+
+      // ====== PAQUETES (API 1) ======
+      let dataPaquetes = [];
       try {
-        // Cargar paquetes
-        try {
-          const responsePaquetes = await fetch(API_URLS.PRODUCTOS);
-          const dataPaquetes = await responsePaquetes.json();
-          if (Array.isArray(dataPaquetes)) {
-            paquetesDestacados.value = dataPaquetes;
-            statsGenerales.value = [];
-          } else if (dataPaquetes && Array.isArray(dataPaquetes.paquetes)) {
-            paquetesDestacados.value = dataPaquetes.paquetes;
-            statsGenerales.value = dataPaquetes.stats || [];
-          } else {
-            paquetesDestacados.value = [];
-            statsGenerales.value = [];
-          }
-          stats.value.totalPaquetes = paquetesDestacados.value.length;
-        } catch (e) {
-          // fallback to local data files if API call fails
-          const responsePaquetes = await fetch('/data/paquetes.json');
-          const dataPaquetes = await responsePaquetes.json();
-          paquetesDestacados.value = dataPaquetes.paquetes || [];
-          stats.value.totalPaquetes = paquetesDestacados.value.length;
-          statsGenerales.value = dataPaquetes.stats || [];
-        }
-
-        // Cargar destinos
-        try {
-          const responseDestinos = await fetch(API_URLS.DESTINOS);
-          const dataDestinos = await responseDestinos.json();
-          if (Array.isArray(dataDestinos)) {
-            stats.value.totalDestinos = dataDestinos.length;
-          } else if (dataDestinos && Array.isArray(dataDestinos.destinos)) {
-            stats.value.totalDestinos = dataDestinos.destinos.length;
-          } else {
-            stats.value.totalDestinos = destinosLocal.length;
-          }
-        } catch (e) {
-          console.warn('Fallo al obtener destinos desde API, usando datos locales:', e);
-          stats.value.totalDestinos = destinosLocal.length;
-        }
-
-        // Cargar flota
-        try {
-          const responseFlota = await fetch(API_URLS.FLOTA);
-          const dataFlota = await responseFlota.json();
-          if (Array.isArray(dataFlota)) {
-            stats.value.totalFlota = dataFlota.length;
-          } else if (dataFlota && Array.isArray(dataFlota.flota)) {
-            stats.value.totalFlota = dataFlota.flota.length;
-          } else {
-            stats.value.totalFlota = flyLocal.length;
-          }
-        } catch (e) {
-          console.warn('Fallo al obtener flota desde API, usando datos locales:', e);
-          stats.value.totalFlota = flyLocal.length;
-        }
-
-        // Cargar usuarios
-        try {
-          const responseUsuarios = await fetch(API_URLS.USUARIOS);
-          let dataUsuarios = await responseUsuarios.json();
-          if (!Array.isArray(dataUsuarios) || dataUsuarios.length === 0) {
-            dataUsuarios = usuariosLocal;
-          }
-          stats.value.totalUsuarios = dataUsuarios.length;
-        } catch (e) {
-          const responseUsuarios = await fetch('/data/usuarios.json');
-          const dataUsuarios = await responseUsuarios.json();
-          stats.value.totalUsuarios = dataUsuarios.length;
-        }
-
-      } catch (error) {
-        console.error('Error cargando datos:', error);
-      } finally {
-        cargando.value = false;
+        const resPaquetes = await fetch(API_URLS.PRODUCTOS);
+        dataPaquetes = await resPaquetes.json();
+        if (!Array.isArray(dataPaquetes)) dataPaquetes = [];
+      } catch (e) {
+        const resLocal = await fetch('/data/paquetes.json');
+        const local = await resLocal.json();
+        dataPaquetes = local.paquetes || [];
       }
-    };
+      paquetesDestacados.value = dataPaquetes;
+      stats.value.totalPaquetes = dataPaquetes.length;
+
+      // ====== DESTINOS (API 2) ======
+      let dataDestinos = [];
+      try {
+        const resDestinos = await fetch(API_URLS.DESTINOS);
+        dataDestinos = await resDestinos.json();
+        if (!Array.isArray(dataDestinos)) dataDestinos = destinosLocal;
+      } catch (e) {
+        dataDestinos = destinosLocal;
+      }
+      stats.value.totalDestinos = dataDestinos.length;
+
+      // ====== FLOTA (API 2) ======
+      let dataFlota = [];
+      try {
+        const resFlota = await fetch(API_URLS.FLOTA);
+        dataFlota = await resFlota.json();
+        if (!Array.isArray(dataFlota)) dataFlota = flyLocal;
+      } catch (e) {
+        dataFlota = flyLocal;
+      }
+      stats.value.totalFlota = dataFlota.length;
+
+      // ====== USUARIOS (API 1) ======
+      let dataUsuarios = [];
+      try {
+        const resUsuarios = await fetch(API_URLS.USUARIOS);
+        dataUsuarios = await resUsuarios.json();
+        if (!Array.isArray(dataUsuarios)) dataUsuarios = usuariosLocal;
+      } catch (e) {
+        dataUsuarios = usuariosLocal;
+      }
+      stats.value.totalUsuarios = dataUsuarios.length;
+
+      // ====== ESTADÍSTICAS GENERALES ======
+      statsGenerales.value = [
+        { etiqueta: "Paquetes Registrados", numero: stats.value.totalPaquetes },
+        { etiqueta: "Destinos Disponibles", numero: stats.value.totalDestinos },
+        { etiqueta: "Vehículos en Flota", numero: stats.value.totalFlota },
+        { etiqueta: "Usuarios Activos", numero: stats.value.totalUsuarios }
+      ];
+
+    } catch (error) {
+      console.error("Error cargando datos:", error);
+    } finally {
+      cargando.value = false;
+    }
+  };
+
 
     onMounted(() => {
       usuario.value = localStorage.getItem('usuario') || 'Usuario';

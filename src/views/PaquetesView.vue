@@ -1,352 +1,222 @@
 <template>
-  <div class="paquetes-view">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">
-        <i class="bi bi-suitcase-lg me-2"></i>
-        Gestión de Paquetes Turísticos
-      </h2>
-      <button 
-        class="btn btn-primary" 
-        data-bs-toggle="modal" 
-        data-bs-target="#paqueteModal"
-        @click="abrirModalNuevo"
-      >
-        <i class="bi bi-plus-circle me-2"></i>
-        Nuevo Paquete
-      </button>
-    </div>
+  <div class="paquetes-container">
+    <h1>📦 Gestión de Productos</h1>
 
-    <!-- Alerta de éxito/error -->
-    <div 
-      v-if="alerta.visible" 
-      :class="`alert alert-${alerta.tipo} alert-dismissible fade show`" 
-      role="alert"
-    >
-      {{ alerta.mensaje }}
-      <button 
-        type="button" 
-        class="btn-close" 
-        @click="alerta.visible = false"
-      ></button>
-    </div>
+    <button class="btn-crear" @click="nuevoProducto">➕ Crear Producto</button>
 
-    <!-- Loading spinner -->
-    <div v-if="cargando" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
-    </div>
+    <!-- FORMULARIO -->
+    <div v-if="showForm" class="form-card">
+      <h2>{{ editMode ? "Editar Producto" : "Crear Producto" }}</h2>
 
-    <!-- Tabla de paquetes -->
-    <div v-else class="card shadow-sm">
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead class="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Imagen</th>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Precio (COP)</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="paquete in paquetes" :key="paquete.id">
-                <td>{{ paquete.id }}</td>
-                <td>
-                  <img 
-                    :src="paquete.imagen" 
-                    :alt="paquete.titulo" 
-                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 0.5rem;"
-                  />
-                </td>
-                <td class="fw-semibold">{{ paquete.titulo }}</td>
-                <td class="text-muted small">{{ paquete.descripcion }}</td>
-                <td class="fw-bold text-success">
-                  ${{ paquete.precio.toLocaleString('es-CO') }}
-                </td>
-                <td>
-                  <button 
-                    class="btn btn-sm btn-outline-primary me-2"
-                    @click="abrirModalEditar(paquete)"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#paqueteModal"
-                  >
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button 
-                    class="btn btn-sm btn-outline-danger"
-                    @click="eliminarPaquete(paquete.id)"
-                  >
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <form @submit.prevent="guardarProducto">
+        <label>Nombre</label>
+        <input v-model="form.nombre" required />
+
+        <label>Descripción</label>
+        <input v-model="form.descripcion" required />
+
+        <label>Precio</label>
+        <input v-model="form.precio" type="number" required />
+
+        <label>Imagen (URL)</label>
+        <input v-model="form.imagen" required />
+
+        <div class="buttons">
+          <button type="submit" class="btn-save">Guardar</button>
+          <button type="button" class="btn-cancel" @click="cancelar">Cancelar</button>
         </div>
-      </div>
+      </form>
     </div>
 
-    <!-- Modal para crear/editar paquete -->
-    <div 
-      class="modal fade" 
-      id="paqueteModal" 
-      tabindex="-1"
-    >
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              {{ modoEdicion ? 'Editar Paquete' : 'Nuevo Paquete' }}
-            </h5>
-            <button 
-              type="button" 
-              class="btn-close" 
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="guardarPaquete">
-              <div class="mb-3">
-                <label class="form-label">Título del Paquete</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  v-model="paqueteActual.titulo"
-                  placeholder="Ej: Paquete Cancún 5 días"
-                  required
-                />
-              </div>
-              
-              <div class="mb-3">
-                <label class="form-label">Descripción</label>
-                <textarea 
-                  class="form-control" 
-                  v-model="paqueteActual.descripcion"
-                  rows="3"
-                  placeholder="Describe el paquete turístico"
-                  required
-                ></textarea>
-              </div>
-              
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Precio (COP)</label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model="paqueteActual.precio"
-                    placeholder="4800000"
-                    required
-                  />
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">URL de Imagen</label>
-                  <input 
-                    type="url" 
-                    class="form-control" 
-                    v-model="paqueteActual.imagen"
-                    placeholder="https://..."
-                  />
-                </div>
-              </div>
+    <!-- TABLA -->
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
 
-              <!-- Preview de imagen -->
-              <div v-if="paqueteActual.imagen" class="mb-3">
-                <label class="form-label">Vista previa</label>
-                <div class="text-center">
-                  <img 
-                    :src="paqueteActual.imagen" 
-                    alt="Preview" 
-                    class="img-thumbnail"
-                    style="max-height: 200px;"
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button 
-              type="button" 
-              class="btn btn-secondary" 
-              data-bs-dismiss="modal"
-            >
-              Cancelar
-            </button>
-            <button 
-              type="button" 
-              class="btn btn-primary"
-              @click="guardarPaquete"
-            >
-              <i class="bi bi-save me-2"></i>
-              {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      <tbody>
+        <tr v-for="producto in productos" :key="producto.id">
+          <td><img :src="producto.imagen" class="img-tabla" /></td>
+          <td>{{ producto.nombre }}</td>
+          <td>${{ producto.precio }}</td>
+          <td>
+            <button class="btn-edit" @click="editarProducto(producto)">✏</button>
+            <button class="btn-delete" @click="eliminarProducto(producto.id)">🗑</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
-import { Modal } from 'bootstrap';
-import { API_URLS } from '@/service/api.js';
+<script setup>
+import { ref, onMounted } from "vue";
+import { API_URLS } from "@/service/api.js";
 
-export default {
-  name: 'PaquetesView',
-  setup() {
-    const paquetes = ref([]);
-    const cargando = ref(false);
-    const modoEdicion = ref(false);
-    const paqueteActual = ref({
-      titulo: '',
-      precio: 0,
-      descripcion: '',
-      imagen: ''
+const productos = ref([]);
+const showForm = ref(false);
+const editMode = ref(false);
+
+const form = ref({
+  id: null,
+  nombre: "",
+  descripcion: "",
+  precio: "",
+  imagen: ""
+});
+
+// 🔥 1 — Cargar productos desde la API
+const cargarProductos = async () => {
+  const res = await fetch(API_URLS.PRODUCTOS);
+  productos.value = await res.json();
+};
+
+onMounted(() => cargarProductos());
+
+// 🔥 2 — Crear un producto
+const nuevoProducto = () => {
+  showForm.value = true;
+  editMode.value = false;
+  form.value = { id: null, nombre: "", descripcion: "", precio: "", imagen: "" };
+};
+
+// 🔥 3 — Editar un producto
+const editarProducto = (p) => {
+  showForm.value = true;
+  editMode.value = true;
+  form.value = { ...p };
+};
+
+// 🔥 4 — Guardar (crear o actualizar)
+const guardarProducto = async () => {
+  if (editMode.value) {
+    // EDITAR
+    await fetch(`${API_URLS.PRODUCTOS}/${form.value.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form.value)
     });
-
-    const alerta = ref({
-      visible: false,
-      tipo: 'success',
-      mensaje: ''
+  } else {
+    // CREAR
+    await fetch(API_URLS.PRODUCTOS, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form.value)
     });
-
-    const cargarPaquetes = async () => {
-      cargando.value = true;
-      try {
-        const response = await fetch(API_URLS.PRODUCTOS);
-        const data = await response.json();
-        // API may return an array or an object with `paquetes`.
-        if (Array.isArray(data)) {
-          paquetes.value = data;
-        } else if (data && Array.isArray(data.paquetes)) {
-          paquetes.value = data.paquetes;
-        } else {
-          paquetes.value = [];
-        }
-      } catch (error) {
-        mostrarAlerta('danger', 'Error al cargar paquetes');
-        console.error(error);
-      } finally {
-        cargando.value = false;
-      }
-    };
-
-    const abrirModalNuevo = () => {
-      modoEdicion.value = false;
-      paqueteActual.value = {
-        titulo: '',
-        precio: 0,
-        descripcion: '',
-        imagen: ''
-      };
-    };
-
-    const abrirModalEditar = (paquete) => {
-      modoEdicion.value = true;
-      paqueteActual.value = { ...paquete };
-    };
-
-    const guardarPaquete = () => {
-      try {
-        if (modoEdicion.value) {
-          // Actualizar paquete existente
-          const index = paquetes.value.findIndex(p => p.id === paqueteActual.value.id);
-          if (index !== -1) {
-            paquetes.value[index] = { ...paqueteActual.value };
-          }
-          mostrarAlerta('success', 'Paquete actualizado correctamente');
-        } else {
-          // Crear nuevo paquete
-          const nuevoId = Math.max(...paquetes.value.map(p => p.id), 0) + 1;
-          const nuevoPaquete = {
-            id: nuevoId,
-            ...paqueteActual.value
-          };
-          paquetes.value.unshift(nuevoPaquete);
-          mostrarAlerta('success', 'Paquete creado correctamente');
-        }
-
-        cerrarModal();
-      } catch (error) {
-        mostrarAlerta('danger', 'Error al guardar paquete');
-        console.error(error);
-      }
-    };
-
-    const eliminarPaquete = (id) => {
-      if (!confirm('¿Estás seguro de eliminar este paquete?')) return;
-
-      try {
-        paquetes.value = paquetes.value.filter(p => p.id !== id);
-        mostrarAlerta('success', 'Paquete eliminado correctamente');
-      } catch (error) {
-        mostrarAlerta('danger', 'Error al eliminar paquete');
-        console.error(error);
-      }
-    };
-
-    const mostrarAlerta = (tipo, mensaje) => {
-      alerta.value = { visible: true, tipo, mensaje };
-      setTimeout(() => {
-        alerta.value.visible = false;
-      }, 3000);
-    };
-
-    const cerrarModal = () => {
-      const modalEl = document.getElementById('paqueteModal');
-      const modal = Modal.getInstance(modalEl);
-      if (modal) modal.hide();
-    };
-
-    onMounted(() => {
-      cargarPaquetes();
-    });
-
-    return {
-      paquetes,
-      cargando,
-      modoEdicion,
-      paqueteActual,
-      alerta,
-      abrirModalNuevo,
-      abrirModalEditar,
-      guardarPaquete,
-      eliminarPaquete
-    };
   }
+
+  showForm.value = false;
+  await cargarProductos(); // refrescar
+};
+
+// 🔥 5 — Eliminar
+const eliminarProducto = async (id) => {
+  if (!confirm("¿Eliminar este producto?")) return;
+
+  await fetch(`${API_URLS.PRODUCTOS}/${id}`, {
+    method: "DELETE"
+  });
+
+  await cargarProductos();
+};
+
+const cancelar = () => {
+  showForm.value = false;
 };
 </script>
 
 <style scoped>
-.paquetes-view {
-  animation: fadeIn 0.5s;
+.paquetes-container {
+  padding: 20px;
 }
 
-@keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px);
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0);
-  }
+.btn-crear {
+  background: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 20px;
 }
 
-.table th {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
+.form-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
 }
 
-.modal-lg {
-  max-width: 700px;
+.form-card label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+.form-card input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+}
+
+.buttons {
+  margin-top: 15px;
+}
+
+.btn-save {
+  background: #2196f3;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #aaa;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th, .tabla td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.img-tabla {
+  width: 60px;
+  border-radius: 6px;
+}
+
+.btn-edit {
+  background: #ffb300;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background: #e53935;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
 }
 </style>

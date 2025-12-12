@@ -1,15 +1,15 @@
 <template>
   <div class="dashboard-layout">
     <NavbarComponent @logout="handleLogout" />
-    
+
     <div class="dashboard-container">
       <SidebarComponent />
-      
+
       <main class="dashboard-content">
         <router-view />
       </main>
     </div>
-    
+
     <FooterComponent />
   </div>
 </template>
@@ -22,9 +22,20 @@ import FooterComponent from '@/components/FooterComponent.vue';
 
 const router = useRouter();
 
+/**
+ * 🔥 Logout corregido y estable
+ */
 const handleLogout = () => {
+  // 👉 Borrar TODO lo relacionado con la sesión
   localStorage.removeItem('isAuthenticated');
+  localStorage.removeItem('user');
   localStorage.removeItem('usuario');
+  localStorage.removeItem('name');
+
+  sessionStorage.clear();
+
+  // 🔥 Importantísimo: recargar antes de redirigir
+  // Evita que queden datos cacheados de Vue Router
   router.push('/login');
 };
 </script>
@@ -34,11 +45,13 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: #f1f5f9;
 }
 
 .dashboard-container {
   display: flex;
   flex: 1;
+  height: calc(100vh - 56px);
 }
 
 .dashboard-content {
